@@ -1,3 +1,5 @@
-https://json-schema.org/understanding-json-schema/reference/index.html
-https://devhints.io/knex
-https://vincit.github.io/objection.js/api/query-builder/find-methods.html#orwherenot
+# hosting website:
+
+https://bit.ly/3zLij1b
+Username: upwork@redcappi.com
+Password: autobook@2021
