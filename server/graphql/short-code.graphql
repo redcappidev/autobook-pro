@@ -1,0 +1,23 @@
+type ShortCode {
+  id: ID!
+  alias: String
+  shortCode: String
+}
+
+input ShortCodeInput {
+  id: ID
+  alias: String
+  shortCode: String
+}
+
+type Query {
+  shortCodes: [ShortCode!]!
+    @isAuthenticated
+}
+
+type Mutation {
+  updateShortCodes(input: [ShortCodeInput!]!): [ShortCode!]!
+    @hasRole(role: SUPERADMIN)
+  deleteShortCodes(ids: [ID!]!): Void
+    @hasRole(role: SUPERADMIN)
+}

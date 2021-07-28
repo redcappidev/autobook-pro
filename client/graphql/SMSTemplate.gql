@@ -1,0 +1,35 @@
+query GetSMSTemplate($id: ID!) {
+  smsTemplate(id: $id) {
+    id
+    name
+    script
+  }
+}
+
+query GetSMSTemplates {
+  smsTemplates {
+    id
+    name
+    script
+  }
+}
+
+mutation CreateSMSTemplate($input: CreateSMSTemplateInput!) {
+  createSMSTemplate(input: $input) {
+    id
+    name
+    script
+  }
+}
+
+mutation UpdateSMSTemplate($id: ID!, $input: UpdateSMSTemplateInput!) {
+  updateSMSTemplate(id: $id, input: $input) {
+    id
+    name
+    script
+  }
+}
+
+mutation DeleteSMSTemplate($id: ID!) {
+  deleteSMSTemplate(id: $id)
+}

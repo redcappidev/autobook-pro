@@ -1,0 +1,27 @@
+type MileagePricing {
+  id: ID!
+  minMileage: PositiveInt
+  maxMileage: PositiveInt
+  price: PositiveFloat
+  order: NonNegativeInt
+}
+
+input MileagePricingInput {
+  id: ID
+  minMileage: PositiveInt
+  maxMileage: PositiveInt
+  price: PositiveFloat
+  order: NonNegativeInt
+}
+
+type Query {
+  mileagePricings: [MileagePricing!]!
+    @hasPermissions(permissions: ["taq.view"])
+}
+
+type Mutation {
+  updateMileagePricings(pricingData: [MileagePricingInput!]!): [MileagePricing!]!
+    @hasPermissions(permissions: ["taq.update"])
+  deleteMileagePricings(ids: [ID!]!): Void
+    @hasPermissions(permissions: ["taq.update"])
+}

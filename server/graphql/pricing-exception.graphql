@@ -1,0 +1,66 @@
+input PricingExceptionsFilter {
+  originState: String
+  originCity: String
+  destState: String
+  destCity: String
+}
+
+type PricingRule {
+  originRadius: NonNegativeInt
+  destRadius: NonNegativeInt
+  price: Float
+}
+
+input PricingRuleInput {
+  originRadius: NonNegativeInt
+  destRadius: NonNegativeInt
+  priceBump: Float
+  price: Float
+}
+
+type PricingException {
+  id: ID!
+  originState: String
+  originCity: String
+  destState: String
+  destCity: String
+  rules: [PricingRule!]!
+}
+
+type PaginatedPricingExceptions {
+  data: [PricingException!]!
+  pageInfo: PageInfo
+}
+
+type Query {
+  pricingExceptions(
+    filter: PricingExceptionsFilter
+    cursor: PageCursor
+  ): PaginatedPricingExceptions
+    @hasPermissions(permissions: ["taq.view"])
+}
+
+type Mutation {
+  createPricingException(
+    originState: String
+    originCity: String
+    destState: String
+    destCity: String
+    pricingRules: [PricingRuleInput]
+  ): PricingException
+    @hasPermissions(permissions: ["taq.update"])
+  updatePricingRule(
+    pricingExceptionID: ID!
+    priority: Int
+    pricingRule: PricingRuleInput
+  ): PricingException
+    @hasPermissions(permissions: ["taq.update"])
+  updatePricingRules(
+    pricingExceptionIDs: [ID!]
+    priority: Int
+    pricingRule: PricingRuleInput
+  ): [PricingException]
+    @hasPermissions(permissions: ["taq.update"])
+  deletePricingException(pricingExceptionID: ID!): PricingException
+    @hasPermissions(permissions: ["taq.update"])
+}

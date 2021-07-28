@@ -1,0 +1,21 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": false
+      }
+    ],
+    "vue"
+  ],
+  "plugins": [
+    "@babel/plugin-transform-runtime",
+    "dynamic-import-node",
+    "transform-imports",
+    ["module-resolver", {
+      "alias": {
+        "@server": "./server"
+      }
+    }]
+  ]
+}

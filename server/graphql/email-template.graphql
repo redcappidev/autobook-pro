@@ -1,0 +1,61 @@
+type EmailTemplate {
+  id: ID!
+  name: String!
+  emailSubject: String!
+  emailFrom: String!
+  emailFromName: String!
+  replyTo: String!
+  emailBcc: String
+  htmlBody: String
+  statusOnOpen: Status
+  statusOnClick: Status
+  referrers: [Referrer]
+  placeholders: JSON
+}
+
+input CreateEmailTemplateInput {
+  name: String!
+  emailFrom: String!
+  emailFromName: String!
+  replyTo: String!
+  emailSubject: String!
+  emailBcc: String
+  htmlBody: String
+  statusOnOpen: PositiveInt
+  statusOnClick: PositiveInt
+  referrers: [String]
+  placeholders: JSON
+}
+
+input UpdateEmailTemplateInput {
+  name: String!
+  emailFrom: String!
+  emailFromName: String!
+  replyTo: String!
+  emailSubject: String!
+  emailBcc: String
+  htmlBody: String
+  statusOnOpen: PositiveInt
+  statusOnClick: PositiveInt
+  referrers: [String]
+  placeholders: JSON
+}
+
+type Query {
+  emailTemplate(id: ID!): EmailTemplate!
+    @hasPermissions(permissions: ["email_template.view"])
+
+  emailTemplates: [EmailTemplate!]!
+    @hasOneOfPermissions(permissions: ["email_template.view", "quote.view", "order.view", "status.view", "status.update"])
+}
+
+type Mutation {
+  createEmailTemplate(input: CreateEmailTemplateInput): EmailTemplate
+    @hasPermissions(permissions: ["email_template.create"])
+
+  updateEmailTemplate(templateId: ID!, input: UpdateEmailTemplateInput): EmailTemplate
+    @hasPermissions(permissions: ["email_template.update"])
+
+  deleteEmailTemplate(templateId: ID!): String
+    @hasPermissions(permissions: ["email_template.update"])
+}

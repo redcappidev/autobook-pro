@@ -1,0 +1,8 @@
+type Transaction {
+  id: ID!
+  order: Order
+  amount: Int!
+  note: String
+  transactionId: String
+  createdAt: DateTime!
+}

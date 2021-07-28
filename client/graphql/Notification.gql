@@ -1,0 +1,37 @@
+fragment Notification on Notification {
+  id
+  type
+  description
+  meta
+  actions
+  viewed
+  createdAt
+}
+
+query GetNotificationsCount {
+  notificationsCount
+}
+
+query GetTodayNotifications {
+  todayNotifications {
+    ...Notification
+  }
+}
+
+query GetEarlierNotifications {
+  earlierNotifications {
+    ...Notification
+  }
+}
+
+mutation MarkNotificationAsRead($id: ID!) {
+  markNotificationAsRead(id: $id)
+}
+
+mutation MarkTodayNotificationsAsRead {
+  markTodayNotificationsAsRead
+}
+
+mutation MarkEarlierNotificationsAsRead {
+  markEarlierNotificationsAsRead
+}

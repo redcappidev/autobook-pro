@@ -1,0 +1,94 @@
+enum QUOTE_GROUP {
+  TODAY
+  WEEK
+  MONTH
+  PAST_DUE
+  ALL
+  DISPATCHED
+  CANCELED
+}
+
+enum SHIPPER_TIMEZONE {
+  EST
+  CST
+  MT
+  PST
+}
+
+input PageCursor {
+  page: Int
+  size: Int
+}
+
+type PageInfo {
+  page: Int
+  size: Int
+  total: Int
+}
+input Resource {
+  name: String!
+  key: String
+}
+
+type Referrer {
+  label: String
+  value: String
+}
+
+type QuotesCountByGroup {
+  today: Int
+  week: Int
+  month: Int
+  pastDue: Int
+  all: Int
+  dispatched: Int
+  canceled: Int
+}
+
+input BillingAddressInput {
+  companyName: String
+  firstName: String!
+  lastName: String!
+  email: EmailAddress!
+  address: String!
+  city: String!
+  state: String!
+  zipcode: PostalCode!
+}
+
+input CreditCardInput {
+  cardNumber: String!
+  exprMonth: String!
+  exprYear: String!
+  cvv: String!
+}
+
+input BillingInformationInput {
+  billingAddress: BillingAddressInput!
+  creditCard: CreditCardInput!
+}
+
+type BillingAddress {
+  companyName: String
+  firstName: String!
+  lastName: String!
+  email: EmailAddress!
+  address: String
+  city: String!
+  state: String!
+  zipcode: PostalCode!
+}
+
+type CreditCard {
+  cardNumber: String!
+  expirationDate: String!
+}
+
+type BillingInformation {
+  billingAddress: BillingAddress!
+  creditCard: CreditCard!
+}
+
+# Need to remove the custom scalar type that was defined prior to
+# the recent graphql-scalar version that defines NonEmptyString
+# scalar NonEmptyString

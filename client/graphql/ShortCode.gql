@@ -1,0 +1,21 @@
+fragment ShortCode on ShortCode {
+  id
+  alias
+  shortCode
+}
+
+query GetShortCodes {
+  shortCodes {
+    ...ShortCode
+  }
+}
+
+mutation UpdateShortCodes($input: [ShortCodeInput!]!) {
+  updateShortCodes(input: $input) {
+    ...ShortCode
+  }
+}
+
+mutation DeleteShortCodes($ids: [ID!]!) {
+  deleteShortCodes(ids: $ids)
+}

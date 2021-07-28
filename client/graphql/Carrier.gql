@@ -1,0 +1,90 @@
+fragment Carrier on Carrier {
+  id
+  mcNumber
+  dotNumber
+  companyName
+  address
+  city
+  state
+  zipcode
+  phoneNumber
+  fax
+  firstContact
+  secondContact
+  insuranceExpires
+  email
+  contactOption
+  needs1099
+  ein
+  ssn
+  customField1
+  customField2
+  customField3
+  customField4
+}
+
+fragment CarrierDetail on Carrier {
+  ...Carrier
+  drivers {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+  }
+}
+
+fragment Driver on Driver {
+  id
+  firstName
+  lastName
+  email
+  phoneNumber
+}
+
+query GetCarrier($id: ID!) {
+  carrier(id: $id) {
+    ...CarrierDetail
+  }
+}
+
+query GetCarriers(
+  $search: String
+  $sortBy: CARRIER_SORT_BY
+  $cursor: PageCursor
+) {
+  carriers(search: $search, sortBy: $sortBy, cursor: $cursor) {
+    data {
+      ...Carrier
+    }
+    pageInfo {
+      page
+      size
+      total
+    }
+  }
+}
+
+mutation AddCarrier($input: CreateCarrierInput!) {
+  addCarrier(input: $input) {
+    ...Carrier
+  }
+}
+
+mutation UpdateCarrier($id: ID!, $input: UpdateCarrierInput!) {
+  updateCarrier(id: $id, input: $input) {
+    ...Carrier
+  }
+}
+
+mutation AddDriver($carrierId: ID!, $input: CreateDriverInput!) {
+  addDriver(carrierId: $carrierId, input: $input) {
+    ...Driver
+  }
+}
+
+mutation UpdateDriver($id: ID!, $input: UpdateDriverInput!) {
+  updateDriver(id: $id, input: $input) {
+    ...Driver
+  }
+}

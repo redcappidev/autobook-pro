@@ -1,0 +1,333 @@
+fragment Transaction on Transaction {
+  id
+  amount
+  note
+  transactionId
+  createdAt
+}
+
+fragment Shipper on OrderShipper {
+  firstName
+  lastName
+  companyName
+  address
+  address2
+  email
+  phone
+  phone2
+  city
+  state
+  zipcode
+  note
+  noText
+  noEmail
+}
+
+fragment Spot on OrderSpot {
+  name
+  address
+  address2
+  zipcode
+  city
+  state
+  phone
+  phone2
+}
+
+fragment Vehicle on OrderVehicle {
+  year
+  make
+  model
+  operable
+  size {
+    id
+    name
+  }
+  color
+  plate
+  state
+  vin
+  lot
+}
+
+fragment Transport on Transport {
+  miles
+  carrierType
+  availableDate
+  deliveryDate
+  basePrice
+  sizeFee
+  inopFee
+  enclosedFee
+  deposit
+  fullPay
+  totalPrice
+}
+
+fragment BillingInformation on BillingInformation {
+  billingAddress {
+    companyName
+    firstName
+    lastName
+    email
+    address
+    city
+    state
+    zipcode
+  }
+  creditCard {
+    cardNumber
+    expirationDate
+  }
+}
+
+fragment OrderSummary on Order {
+  id
+  shipper {
+    firstName
+    lastName
+    email
+    phone
+  }
+  origin {
+    zipcode
+    city
+    state
+  }
+  destination {
+    zipcode
+    city
+    state
+  }
+  vehicles {
+    year
+    make
+    model
+    operable
+  }
+  transport {
+    availableDate
+    fullPay
+    totalPrice
+  }
+  engagements
+}
+
+fragment TermsAndConditions on TermsAndConditions {
+  accepted
+  eName
+  eSign
+  clientIp
+  signedAt
+}
+
+fragment OrderDetail on Order {
+  id
+  parent {
+    id
+    isOrder
+  }
+  children {
+    id
+    isOrder
+  }
+  referrer {
+    value
+    label
+  }
+  shipper {
+    ...Shipper
+  }
+  origin {
+    ...Spot
+  }
+  destination {
+    ...Spot
+  }
+  vehicles {
+    ...Vehicle
+  }
+  transport {
+    ...Transport
+  }
+  parentStatus {
+    id
+    name
+  }
+  childStatus {
+    id
+    name
+  }
+  assignee {
+    id
+    firstName
+    lastName
+  }
+  internalNotes {
+    id
+    note
+    # assignees {
+    #   user {
+    #     id
+    #   }
+    #   viewed
+    #   viewedAt
+    # }
+  }
+  # followup {
+  #   id
+  # }
+  events {
+    id
+    description
+    eventDate
+  }
+  engagements
+  billingInfo {
+    ...BillingInformation
+  }
+  transactions {
+    ...Transaction
+  }
+  dispatch {
+    id
+    order {
+      id
+    }
+    driver {
+      id
+    }
+    instructions
+    pickupDate
+    deliveryDate
+    status
+  }
+  terms {
+    ...TermsAndConditions
+  }
+}
+
+query LoadOrders(
+  $filterBy: LeadFilterBy
+  $sortBy: LEAD_SORT_BY
+  $cursor: PageCursor
+) {
+  orders(filterBy: $filterBy, sortBy: $sortBy, cursor: $cursor) {
+    data {
+      ...OrderSummary
+    }
+    pageInfo {
+      page
+      size
+      total
+    }
+  }
+}
+
+query GetOrdersCount($filterBy: LeadFilterBy) {
+  ordersCount(filterBy: $filterBy) {
+    today
+    week
+    month
+    pastDue
+    all
+    dispatched
+    canceled
+  }
+}
+
+query GetOrder($id: ID!) {
+  order(id: $id) {
+    ...OrderDetail
+  }
+}
+
+mutation CreateOrder($input: CreateOrderInput!) {
+  createOrder(input: $input) {
+    ...OrderDetail
+  }
+}
+
+mutation UpdateOrder($id: ID!, $input: UpdateOrderInput!) {
+  updateOrder(id: $id, input: $input) {
+    ...OrderDetail
+  }
+}
+
+mutation ReassignOrders($ids: [ID!]!, $userId: NonNegativeInt!) {
+  reassignOrders(ids: $ids, userId: $userId) {
+    ...OrderDetail
+  }
+}
+
+mutation PostToLoadBoard($id: ID!) {
+  postToLoadBoard(id: $id) {
+    ...OrderDetail
+  }
+}
+
+mutation RemoveFromLoadBoard($id: ID!) {
+  removeFromLoadBoard(id: $id) {
+    ...OrderDetail
+  }
+}
+
+mutation DuplicateOrder($id: ID!, $mode: DUPLICATION_MODE) {
+  duplicateOrder(id: $id, mode: $mode) {
+    ...OrderDetail
+  }
+}
+
+mutation ConvertToOrder($quoteId: ID!, $input: CreateOrderInput!) {
+  convertToOrder(quoteId: $quoteId, input: $input) {
+    ...OrderDetail
+  }
+}
+
+mutation SetBillingInfoToOrder(
+  $orderId: ID!
+  $input: BillingInformationInput!
+) {
+  setBillingInfoToOrder(orderId: $orderId, input: $input) {
+    ...OrderDetail
+  }
+}
+
+mutation ChargeOrder($orderId: ID!, $amount: Int!, $note: String) {
+  chargeOrder(orderId: $orderId, amount: $amount, note: $note) {
+    ...OrderDetail
+  }
+}
+
+mutation DispatchOrder($orderId: ID!, $input: CreateDispatchInput!) {
+  dispatchOrder(orderId: $orderId, input: $input) {
+    ...OrderDetail
+  }
+}
+
+mutation ResolveTermsAndConditionsLink($encryption: String!) {
+  resolveTermsAndConditionsLink(encryption: $encryption) {
+    orderId
+    terms {
+      ...TermsAndConditions
+    }
+  }
+}
+
+mutation ResolveBillingInformationLink($encryption: String!) {
+  resolveBillingInformationLink(encryption: $encryption)
+}
+
+mutation AcceptTermsAndConditions(
+  $encryption: String!
+  $input: TermsAndConditionsInput!
+) {
+  acceptTermsAndConditions(encryption: $encryption, input: $input)
+}
+
+mutation ProvideBillingInfo(
+  $encryption: String!
+  $input: BillingInformationInput!
+) {
+  provideBillingInfo(encryption: $encryption, input: $input)
+}

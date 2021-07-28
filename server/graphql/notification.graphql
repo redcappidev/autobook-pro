@@ -1,0 +1,35 @@
+enum NOTIFICATION_TYPE {
+  POSITIVE
+  NEGATIVE
+  WARNING
+  INFO
+  ONGOING
+}
+
+type Notification {
+  id: ID!
+  type: NOTIFICATION_TYPE!
+  description: String!
+  meta: JSON
+  actions: JSON
+  viewed: Boolean
+  createdAt: DateTime
+}
+
+type Query {
+  todayNotifications: [Notification]
+    @isAuthenticated
+  earlierNotifications: [Notification]
+    @isAuthenticated
+  notificationsCount: NonNegativeInt
+    @isAuthenticated
+}
+
+type Mutation {
+  markNotificationAsRead(id: ID!): Void
+    @isAuthenticated
+  markTodayNotificationsAsRead: Void
+    @isAuthenticated
+  markEarlierNotificationsAsRead: Void
+    @isAuthenticated
+}

@@ -1,0 +1,31 @@
+mutation AddQuoteNote($input: CreateQuoteNoteInput!) {
+  addQuoteNote(input: $input) {
+    id
+    note
+    # assignees {
+    #   user {
+    #     id
+    #   }
+    #   viewed
+    #   viewedAt
+    # }
+  }
+}
+
+mutation UpdateQuoteNote($id: ID!, $input: UpdateQuoteNoteInput) {
+  updateQuoteNote(id: $id, input: $input) {
+    id
+    note
+    # assignees {
+    #   user {
+    #     id
+    #   }
+    #   viewed
+    #   viewedAt
+    # }
+  }
+}
+
+mutation DeleteQuoteNote($id: ID!) {
+  deleteQuoteNote(id: $id)
+}

@@ -1,0 +1,50 @@
+enum StatusType {
+  QUOTE
+  ORDER
+  ALL
+}
+
+type Status {
+  id: ID!
+  type: StatusType
+  name: String!
+  parent: Status
+  children: [Status]
+  childrenCount: NonNegativeInt
+  emailTemplate: EmailTemplate
+  smsTemplate: SMSTemplate
+}
+
+input CreateStatusInput {
+  parentId: PositiveInt
+  type: StatusType!
+  name: NonEmptyString!
+  emailTemplateId: PositiveInt
+  smsTemplateId: PositiveInt
+}
+
+input UpdateStatusInput {
+  name: NonEmptyString
+  parentId: PositiveInt
+  emailTemplateId: PositiveInt
+  smsTemplateId: PositiveInt
+}
+
+type Query {
+  status(id: ID!): Status
+    @hasPermissions(permissions: ["status.view"])
+  parentStatuses(type: StatusType!): [Status!]!
+    @hasOneOfPermissions(permissions: ["status.view", "quote.view", "order.view"])
+  childStatuses(parentId: ID!): [Status!]!
+    @hasOneOfPermissions(permissions: ["status.view", "quote.view", "order.view"])
+}
+
+type Mutation {
+  createStatus(input: CreateStatusInput!): Status
+    @hasPermissions(permissions: ["status.create"])
+  updateStatus(id: ID!, input: UpdateStatusInput): Status
+    @hasPermissions(permissions: ["status.update"])
+    @nonNullOptionalInput(paths: ["input.name", "input.parentId"])
+  deleteStatus(id: ID!): Status
+    @hasPermissions(permissions: ["status.update"])
+}

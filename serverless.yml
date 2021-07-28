@@ -1,0 +1,415 @@
+service: autobook-pro
+variablesResolutionMode: 20210326
+configValidationMode: error
+frameworkVersion: '2'
+
+custom:
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  baseUrl:
+    dev: https://beta.autobookpro.com
+    prod: https://app.autobookpro.com
+  reservedConcurrency:
+    dev: 100
+    # prod: 1000
+    # @ToDo Increase the reserved concurrency up to 1000 when releasing the first version
+    prod: 100
+  deploy:
+    # Users can define these parameters in SSM (they will be looked up at deploy time)
+    # or in the deploy environment or inline
+    bucket_name: ${ssm:/autobook-pro/assets-bucket-name}
+    bucket_arn: ${ssm:/autobook-pro/assets-bucket-arn}
+  vpcConfig:
+    subnetIds:
+      # Users can define these parameters in SSM (they will be looked up at deploy time)
+      # or in the deploy environment or inline
+      - '${ssm:/autobook-pro/subnet-private-1}'
+      - '${ssm:/autobook-pro/subnet-private-2}'
+    securityGroupIds:
+      # Users can define this parameter in SSM (it will be looked up at deploy time)
+      # or in the deploy environment or inline
+      - '${ssm:/autobook-pro/lambda-security-group}'
+  domainName:
+    dev: beta.autobookpro.com
+    prod: app.autobookpro.com
+  customDomain:
+    domainName: ${self:custom.domainName.${self:custom.stage}}
+    stage: ${self:custom.stage}
+    basePath: ''
+    createRoute53Record: true
+    securityPolicy: tls_1_2
+    endpointType: edge
+  custom:
+    prune:
+      automatic: true
+      number: 5
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  websocketsApiName: autobook-pro-${self:custom.stage}-websocket
+  websocketsApiRouteSelectionExpression: $request.body.action
+  deploymentBucket:
+    name: ${self:custom.deploy.bucket_name}
+    blockPublicAccess: true
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - 'logs:CreateLogGroup'
+            - 'logs:CreateLogStream'
+            - 'logs:PutLogEvents'
+          Resource: '*'
+        - Effect: Allow
+          Action: lambda:InvokeFunction
+          Resource: 'arn:aws:lambda:${self:custom.region}:#{AWS::AccountId}:function:autobook-pro-${self:custom.stage}-worker'
+        - Effect: Allow
+          Action:
+            - 'events:PutEvents'
+            - 'cloudwatch:PutMetricData'
+          Resource: '*'
+        - Effect: Allow
+          Action:
+            - 's3:*'
+          Resource:
+            # Users can define this parameter in SSM (it will be looked up at deploy time)
+            # or in the deploy environment or inline
+            - '${self:custom.deploy.bucket_arn}'
+            - '${self:custom.deploy.bucket_arn}/*'
+        - Effect: Allow
+          Action:
+            - codedeploy:*
+          Resource:
+            - '*'
+  environment:
+    NODE_ENV: production
+    BASE_URL: ${self:custom.baseUrl.${self:custom.stage}}
+
+    AWS_STAGE: ${self:custom.stage}
+    AWS_S3_BUCKET_NAME: ${ssm:/autobook-pro/assets-bucket-name}
+    AWS_WEBSOCKET_DOMAIN: ${ssm:/autobook-pro-${self:custom.stage}/websocket-domain}
+    AWS_JOB_LAMBDA_WORKER_NAME: autobook-pro-${self:custom.stage}-worker
+
+    # Bundle
+    ASSET_DOMAIN: https://s3.amazonaws.com/${self:custom.deploy.bucket_name}/${self:custom.stage}
+    ASSETS_DIR: ./build/client/assets
+    ASSETS_MAP_FILE: assets.json
+
+    # PostgreSQL
+    DB_HOST: ${ssm:/autobook-pro-${self:custom.stage}/db-host}
+    DB_PORT: 5432
+    DB_NAME: ${ssm:/autobook-pro-${self:custom.stage}/db-name}
+    DB_USER: ${ssm:/autobook-pro-${self:custom.stage}/db-user}
+    DB_PASSWORD: ${ssm:/autobook-pro-${self:custom.stage}/db-password}
+
+    # # Google Firebase
+    # FIREBASE_API_KEY: ${ssm:/autobook-pro-${self:custom.stage}/firebase-api-key}
+    # FIREBASE_PROJECT_ID: ${ssm:/autobook-pro-${self:custom.stage}/firebase-project-id}
+    # FIREBASE_MESSAGING_SENDER_ID: ${ssm:/autobook-pro-${self:custom.stage}/firebase-messaging-sender-id}
+    # FIREBASE_APP_ID: ${ssm:/autobook-pro-${self:custom.stage}/firebase-app-id}
+    # FIREBASE_MEASUREMENT_ID: ${ssm:/autobook-pro-${self:custom.stage}/firebase-measurement-id}
+
+    # FIREBASE_ADMIN_PRIVATE_KEY_ID: ${ssm:/autobook-pro-${self:custom.stage}/firebase-admin-private-key-id}
+    # FIREBASE_ADMIN_PRIVATE_KEY: ${ssm:/autobook-pro-${self:custom.stage}/firebase-admin-private-key}
+    # FIREBASE_ADMIN_CLIENT_EMAIL: ${ssm:/autobook-pro-${self:custom.stage}/firebase-admin-client-email}
+    # FIREBASE_ADMIN_CLIENT_ID: ${ssm:/autobook-pro-${self:custom.stage}/firebase-admin-client-id}
+    # FIREBASE_ADMIN_CLIENT_CERT_URL: ${ssm:/autobook-pro-${self:custom.stage}/firebase-admin-client-cert-url}
+
+    # Auth0
+    PASSPORT_STRATEGY: auth0
+    AUTH0_CLIENT_ID: ${ssm:/autobook-pro-${self:custom.stage}/auth0-client-id}
+    AUTH0_CLIENT_SECRET: ${ssm:/autobook-pro-${self:custom.stage}/auth0-client-secret}
+    AUTH0_DOMAIN: ${ssm:/autobook-pro-${self:custom.stage}/auth0-domain}
+    SESSION_SECRET: ${ssm:/autobook-pro-${self:custom.stage}/session-secret}
+
+    # Apollo Studio
+    APOLLO_KEY: ${ssm:/autobook-pro-${self:custom.stage}/apollo-studio-key}
+
+    # Google Map
+    GOOGLE_MAP_API_KEY_FOR_SERVER: ${ssm:/autobook-pro-${self:custom.stage}/google-map-api-key-for-server}
+    GOOGLE_MAP_API_KEY_FOR_CLIENT: ${ssm:/autobook-pro-${self:custom.stage}/google-map-api-key-for-client}
+
+    # RingCentral
+    RINGCENTRAL_CLIENTID: ${ssm:/autobook-pro-${self:custom.stage}/ringcentral-client-id}
+    RINGCENTRAL_CLIENTSECRET: ${ssm:/autobook-pro-${self:custom.stage}/ringcentral-client-secret}
+    RINGCENTRAL_SERVER: ${ssm:/autobook-pro-${self:custom.stage}/ringcentral-server}
+    RINGCENTRAL_USERNAME: ${ssm:/autobook-pro-${self:custom.stage}/ringcentral-username}
+    RINGCENTRAL_EXTENSION: ${ssm:/autobook-pro-${self:custom.stage}/ringcentral-extension}
+    RINGCENTRAL_PASSWORD: ${ssm:/autobook-pro-${self:custom.stage}/ringcentral-password}
+
+    # Authorize.net
+    AUTHORIZE_NET_API_LOGIN_ID: ${ssm:/autobook-pro-${self:custom.stage}/anet-api-login-id}
+    AUTHORIZE_NET_TRANSACTION_KEY: ${ssm:/autobook-pro-${self:custom.stage}/anet-transaction-key}
+    AUTHORIZE_NET_ENV: ${ssm:/autobook-pro-${self:custom.stage}/anet-env}
+
+    # Central Dispatch
+    DISPATCH_EMAIL: dispatch@routerunnerslogistics.com
+    CENTRAL_DISPATCH_UID: ${ssm:/autobook-pro-${self:custom.stage}/central-dispatch-uid}
+    CENTRAL_DISPATCH_ENDPOINT_EMAIL: ${ssm:/autobook-pro-${self:custom.stage}/central-dispatch-endpoint-email}
+    CENTRAL_DISPATCH_LISTING_ID_API_URL: ${ssm:/autobook-pro-${self:custom.stage}/central-dispatch-listing-id-api}
+
+    # Sendgrid
+    SENDGRID_API_KEY: ${ssm:/autobook-pro-${self:custom.stage}/sendgrid-api-key}
+
+    DEFAULT_VEHICLE_SIZE_ID: ${ssm:/autobook-pro-${self:custom.stage}/default-vehicle-size-id}
+    DEFAULT_FOLLOWUP_TYPE_ID: ${ssm:/autobook-pro-${self:custom.stage}/default-followup-type-id}
+    POST_TO_LOAD_BOARD_STATUS_ID: ${ssm:/autobook-pro-${self:custom.stage}/post-to-load-board-status-id}
+    DISPATCHED_STATUS_ID: ${ssm:/autobook-pro-${self:custom.stage}/dispatched-status-id}
+    CANCELED_STATUS_ID: ${ssm:/autobook-pro-${self:custom.stage}/canceled-status-id}
+
+    CARRIER_DATA_API_URL: ${ssm:/autobook-pro-${self:custom.stage}/carrier-data-api}
+
+layers:
+  commonLibs:
+    path: layer
+    compatibleRuntimes:
+      - nodejs12.x
+    package:
+      exclude:
+        - '**/node_modules/aws-sdk/**'
+
+functions:
+  api:
+    handler: lambda.handler
+    layers:
+      - {Ref: CommonLibsLambdaLayer}
+    vpc: ${self:custom.vpcConfig}
+    events:
+      - http: ANY /
+      - http: ANY /{proxy+}
+    reservedConcurrency: ${self:custom.reservedConcurrency.${self:custom.stage}}
+    deploymentSettings:
+      type: Canary10Percent5Minutes
+      alias: Live
+      preTrafficHook: preflight
+      postTrafficHook: postflight
+    dependsOn:
+      - PreflightLambdaFunction
+      - PostflightLambdaFunction
+    package:
+      include:
+        - build/server/**
+        - build/client/assets/assets.json
+        - package.json
+        - lambda.js
+      exclude:
+        - '*'
+        - node_modules/**
+        - .github/**
+        - .vscode/**
+        - __test__/**
+        - build/client/assets/**
+        - 'client/**'
+        - dev-tools/**
+        - docs/**
+        - migrations/**
+        - server/**
+        - static/**
+        - webpack/**
+  worker:
+    handler: build/server/third-party/aws/lambda/worker.handler
+    layers:
+      - {Ref: CommonLibsLambdaLayer}
+    vpc: ${self:custom.vpcConfig}
+    timeout: 600
+    package:
+      include:
+        - build/server/**
+        - package.json
+      exclude:
+        - '*'
+        - node_modules/**
+        - .github/**
+        - .vscode/**
+        - __test__/**
+        - build/client/assets/**
+        - 'client/**'
+        - dev-tools/**
+        - docs/**
+        - migrations/**
+        - server/**
+        - static/**
+        - webpack/**
+  dailycron:
+    handler: build/server/third-party/aws/lambda/cronjob.daily
+    vpc: ${self:custom.vpcConfig}
+    events:
+      - schedule: rate(1 day)
+    package:
+      include:
+        - package.json
+      exclude:
+        - '*'
+        - node_modules/**
+        - .github/**
+        - .vscode/**
+        - __test__/**
+        - build/server/**
+        - build/client/assets/**
+        - 'client/**'
+        - dev-tools/**
+        - docs/**
+        - migrations/**
+        - server/**
+        - static/**
+        - webpack/**
+  wsConnectHandler:
+    handler: build/server/third-party/aws/websocket/handlers.connect
+    vpc: ${self:custom.vpcConfig}
+    events:
+      - websocket:
+          route: $connect
+    package:
+      include:
+        - package.json
+      exclude:
+        - '*'
+        - node_modules/**
+        - .github/**
+        - .vscode/**
+        - __test__/**
+        - build/client/assets/**
+        - build/server/**
+        - 'client/**'
+        - dev-tools/**
+        - docs/**
+        - migrations/**
+        - server/**
+        - static/**
+        - webpack/**
+  wsDisconnectHandler:
+    handler: build/server/third-party/aws/websocket/handlers.disconnect
+    vpc: ${self:custom.vpcConfig}
+    events:
+      - websocket:
+          route: $disconnect
+    package:
+      include:
+        - package.json
+      exclude:
+        - '*'
+        - node_modules/**
+        - .github/**
+        - .vscode/**
+        - __test__/**
+        - build/client/assets/**
+        - build/server/**
+        - 'client/**'
+        - dev-tools/**
+        - docs/**
+        - migrations/**
+        - server/**
+        - static/**
+        - webpack/**
+  wsConnectUserHandler:
+    handler: build/server/third-party/aws/websocket/connectUser.main
+    layers:
+      - {Ref: CommonLibsLambdaLayer}
+    vpc: ${self:custom.vpcConfig}
+    events:
+      - websocket:
+          route: connect-user
+    package:
+      include:
+        - build/server/**
+        - package.json
+      exclude:
+        - '*'
+        - node_modules/**
+        - .github/**
+        - .vscode/**
+        - __test__/**
+        - build/client/assets/**
+        - 'client/**'
+        - dev-tools/**
+        - docs/**
+        - migrations/**
+        - server/**
+        - static/**
+        - webpack/**
+  wsDefaultHandler:
+    handler: build/server/third-party/aws/websocket/handlers.defaultHandler
+    vpc: ${self:custom.vpcConfig}
+    events:
+      - websocket:
+          route: $default
+    package:
+      include:
+        - package.json
+      exclude:
+        - '*'
+        - node_modules/**
+        - .github/**
+        - .vscode/**
+        - __test__/**
+        - build/client/assets/**
+        - build/server/**
+        - 'client/**'
+        - dev-tools/**
+        - docs/**
+        - migrations/**
+        - server/**
+        - static/**
+        - webpack/**
+  preflight:
+    handler: build/server/third-party/aws/lambda/codedeploy.preflight
+    layers:
+      - {Ref: CommonLibsLambdaLayer}
+    vpc: ${self:custom.vpcConfig}
+    timeout: 600
+    package:
+      include:
+        - build/server/**
+        - migrations/**
+        - package.json
+        - knexfile.js
+      exclude:
+        - '*'
+        - node_modules/**
+        - .github/**
+        - .vscode/**
+        - __test__/**
+        - build/client/assets/**
+        - 'client/**'
+        - dev-tools/**
+        - docs/**
+        - server/**
+        - static/**
+        - webpack/**
+  postflight:
+    handler: build/server/third-party/aws/lambda/codedeploy.postflight
+    layers:
+      - {Ref: CommonLibsLambdaLayer}
+    vpc: ${self:custom.vpcConfig}
+    timeout: 600
+    package:
+      include:
+        - build/server/**
+        - migrations/**
+        - package.json
+        - knexfile.js
+      exclude:
+        - '*'
+        - node_modules/**
+        - .github/**
+        - .vscode/**
+        - __test__/**
+        - build/client/assets/**
+        - 'client/**'
+        - dev-tools/**
+        - docs/**
+        - server/**
+        - static/**
+        - webpack/**
+
+plugins:
+  - serverless-pseudo-parameters
+  - serverless-domain-manager
+  - serverless-plugin-canary-deployments
+  - serverless-api-compression
+  - serverless-prune-plugin
+
+package:
+  individually: true

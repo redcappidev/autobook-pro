@@ -1,0 +1,66 @@
+fragment QuoteSummary on Quote {
+  id
+  shipper {
+    firstName
+    lastName
+    email
+    phone
+  }
+  origin {
+    zipcode
+    city
+    state
+  }
+  destination {
+    zipcode
+    city
+    state
+  }
+  vehicles {
+    year
+    make
+    model
+    operable
+  }
+  transport {
+    availableDate
+    fullPay
+    totalPrice
+  }
+  engagements
+}
+
+fragment Followup on Followup {
+  id
+  followupOn
+  quote {
+    ...QuoteSummary
+  }
+}
+
+query GetFollowups(
+  $filterBy: FollowupsFilterBy
+  $sortBy: FOLLOWUP_SORT_BY
+  $cursor: PageCursor
+) {
+  followups(filterBy: $filterBy, sortBy: $sortBy, cursor: $cursor) {
+    data {
+      ...Followup
+    }
+    pageInfo {
+      page
+      size
+      total
+    }
+  }
+}
+
+query GetFollowupsCount($filterBy: FollowupsFilterBy) {
+  followupsCount(filterBy: $filterBy) {
+    today
+    week
+    month
+    pastDue
+    all
+  }
+}

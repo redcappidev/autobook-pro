@@ -1,0 +1,47 @@
+type VehicleSizeChart {
+  id: ID!
+  year: PositiveInt
+  make: String
+  model: String
+  size: VehicleSize
+  dontQuote: Boolean
+  search: String
+}
+
+input VehicleSizeChartInput {
+  year: PositiveInt
+  make: String
+  model: String
+  dontQuote: Boolean
+  search: String
+}
+
+input VehicleSizeChartFilter {
+  make: String
+  model: String
+}
+
+type PaginatedVehicleSizeCharts {
+  data: [VehicleSizeChart!]!
+  pageInfo: PageInfo
+}
+
+type Query {
+  vehicleSizeCharts(
+    filter: VehicleSizeChartFilter
+    cursor: PageCursor
+  ): PaginatedVehicleSizeCharts
+    @hasPermissions(permissions: ["taq.view"])
+}
+
+type Mutation {
+  createVehicleSizeChart(
+    sizeChartData: VehicleSizeChartInput!
+    sizeID: Int!
+  ): VehicleSizeChart
+    @hasPermissions(permissions: ["taq.update"])
+  updateVehicleSizeChartSize(sizeChartID: ID!, sizeID: Int!): VehicleSizeChart
+    @hasPermissions(permissions: ["taq.update"])
+  deleteVehicleSizeChart(sizeChartID: ID!): VehicleSizeChart
+    @hasPermissions(permissions: ["taq.update"])
+}

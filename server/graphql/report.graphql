@@ -1,0 +1,39 @@
+type UserQuotesMonthlyTotals {
+  userId: NonNegativeInt
+  name: String
+  newQuotes: NonNegativeInt
+  newFollowups: NonNegativeInt
+  newOrders: NonNegativeInt
+  newDispatches: NonNegativeInt
+}
+
+type QuotesMonthlyTotals {
+  newQuotes: NonNegativeInt
+  newFollowups: NonNegativeInt
+  newOrders: NonNegativeInt
+  newDispatches: NonNegativeInt
+}
+
+type QuotesMonthlyTotalsReport {
+  byMe: UserQuotesMonthlyTotals
+  byCompany: QuotesMonthlyTotals
+  byUsers: [UserQuotesMonthlyTotals]
+}
+
+type QuotesDailyTotals {
+  date: Date
+  quotes: [Quote]
+  followups: [Followup]
+  orders: [Order]
+  dispatches: [Dispatch]
+}
+
+type Query {
+  quotesMonthlyTotals: QuotesMonthlyTotalsReport
+    @isAuthenticated
+
+  userQuotesDailyTotals(startDate: Date, endDate: Date): [QuotesDailyTotals]
+    @isAuthenticated
+
+  todayTransactions: [Transaction]
+}

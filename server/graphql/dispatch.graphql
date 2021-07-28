@@ -1,0 +1,21 @@
+enum DISPATCH_STATUS {
+  DISPATCHED
+  COMPLETED
+}
+
+type Dispatch {
+  id: ID!
+  order: Quote
+  driver: Driver
+  instructions: String
+  pickupDate: Date
+  deliveryDate: Date
+  status: DISPATCH_STATUS
+}
+
+input CreateDispatchInput {
+  driverId: PositiveInt!
+  instructions: String!
+  pickupDate: Date!
+  deliveryDate: Date!
+}

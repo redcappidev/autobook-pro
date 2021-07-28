@@ -1,0 +1,16 @@
+enum ORDER_LINK_TYPE {
+  BOOKING
+  TERMS
+  BILLING
+}
+
+type CustomerTermsAndConditions {
+  orderId: ID!
+  terms: TermsAndConditions
+}
+
+type Mutation {
+  resolveBookOrderLink(encryption: String!): CustomerQuote
+  resolveTermsAndConditionsLink(encryption: String!): CustomerTermsAndConditions
+  resolveBillingInformationLink(encryption: String!): Boolean
+}

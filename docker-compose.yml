@@ -1,0 +1,26 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_DB: autobookpro
+      POSTGRES_PASSWORD: autobook
+      POSTGRES_USER: autobook
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  # minio:
+  #   image: minio/minio
+  #   restart: always
+  #   ports:
+  #     - 19000:9000
+  #   volumes:
+  #     - minio:/data
+  #   command: server /data
+volumes:
+  postgres:
+    external: false
+  minio:
+    external: false

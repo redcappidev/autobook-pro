@@ -1,0 +1,707 @@
+type QuoteShipper {
+  firstName: NonEmptyString!
+  lastName: String
+  phone: PhoneNumber!
+  phone2: PhoneNumber
+  email: EmailAddress
+  noText: Boolean
+  noEmail: Boolean
+}
+
+type QuoteSpot {
+  name: String
+  address: String
+  zipcode: PostalCode!
+  city: NonEmptyString!
+  state: NonEmptyString!
+  phone: PhoneNumber
+  phone2: PhoneNumber
+  email: EmailAddress
+}
+
+type QuoteVehicle {
+  year: PositiveInt!
+  make: NonEmptyString!
+  model: NonEmptyString!
+  operable: Boolean
+  size: VehicleSize
+}
+
+type Transport {
+  miles: PositiveInt
+  carrierType: CARRIER_TYPE
+  availableDate: Date
+  deliveryDate: Date
+  basePrice: PositiveFloat
+  sizeFee: Float
+  inopFee: Float
+  enclosedFee: Float
+  deposit: Float
+  fullPay: Float
+  totalPrice: PositiveFloat
+}
+
+input CreateQuoteShipperInput {
+  firstName: NonEmptyString!
+  lastName: String
+  phone: PhoneNumber!
+  phone2: PhoneNumber
+  email: EmailAddress
+  noText: Boolean
+  noEmail: Boolean
+}
+
+input CreateQuoteSpotInput {
+  name: String
+  address: String
+  zipcode: PostalCode!
+  city: NonEmptyString!
+  state: NonEmptyString!
+  phone: PhoneNumber
+  phone2: PhoneNumber
+}
+
+input CreateQuoteVehicleInput {
+  year: PositiveInt!
+  make: NonEmptyString!
+  model: NonEmptyString!
+  operable: Boolean
+}
+
+input CreateTransportInput {
+  miles: PositiveInt
+  carrierType: CARRIER_TYPE
+  availableDate: Date!
+  deliveryDate: Date
+  basePrice: PositiveFloat
+  sizeFee: Float
+  inopFee: Float
+  enclosedFee: Float
+  deposit: Float
+  fullPay: Float
+  totalPrice: PositiveFloat
+}
+
+input UpdateTransportInput {
+  miles: PositiveInt
+  carrierType: CARRIER_TYPE
+  availableDate: Date
+  deliveryDate: Date
+  basePrice: PositiveFloat
+  sizeFee: Float
+  inopFee: Float
+  enclosedFee: Float
+  deposit: Float
+  fullPay: Float
+  totalPrice: PositiveFloat
+}
+
+input UpdateQuoteShipperInput {
+  firstName: NonEmptyString
+  lastName: String
+  email: EmailAddress
+  phone: PhoneNumber
+  phone2: PhoneNumber
+  noText: Boolean
+  noEmail: Boolean
+}
+
+input UpdateQuoteSpotInput {
+  name: String
+  address: String
+  zipcode: PostalCode
+  city: NonEmptyString
+  state: NonEmptyString
+  phone: PhoneNumber
+  phone2: PhoneNumber
+  email: EmailAddress
+}
+
+input UpdateQuoteVehicleInput {
+  year: PositiveInt
+  make: NonEmptyString
+  model: NonEmptyString
+  sizeId: NonNegativeInt
+  operable: Boolean
+}
+
+type OrderShipper {
+  firstName: NonEmptyString!
+  lastName: NonEmptyString!
+  companyName: String
+  address: NonEmptyString
+  address2: String
+  email: EmailAddress!
+  phone: PhoneNumber!
+  phone2: PhoneNumber
+  city: NonEmptyString
+  state: NonEmptyString
+  zipcode: PostalCode
+  note: String
+  noText: Boolean
+  noEmail: Boolean
+}
+
+type OrderSpot {
+  name: NonEmptyString!
+  address: NonEmptyString!
+  address2: String
+  zipcode: PostalCode!
+  city: NonEmptyString!
+  state: NonEmptyString!
+  phone: PhoneNumber!
+  phone2: PhoneNumber
+}
+
+type OrderVehicle {
+  year: Int!
+  make: NonEmptyString!
+  model: NonEmptyString!
+  operable: Boolean!
+  size: VehicleSize!
+  color: HexColorCode
+  plate: String
+  state: String
+  vin: String
+  lot: String
+}
+
+input CreateOrderShipperInput {
+  firstName: NonEmptyString!
+  lastName: NonEmptyString!
+  email: EmailAddress!
+  phone: PhoneNumber!
+  phone2: PhoneNumber
+  companyName: String
+  address: NonEmptyString
+  address2: String
+  city: NonEmptyString
+  state: NonEmptyString
+  zipcode: PostalCode
+  note: String
+  noText: Boolean
+  noEmail: Boolean
+}
+
+input CreateOrderSpotInput {
+  name: NonEmptyString!
+  phone: PhoneNumber!
+  phone2: PhoneNumber
+  address: NonEmptyString!
+  address2: String
+  zipcode: PostalCode!
+  city: NonEmptyString!
+  state: NonEmptyString!
+}
+
+input CreateOrderVehicleInput {
+  year: Int!
+  make: NonEmptyString!
+  model: NonEmptyString!
+  operable: Boolean!
+  sizeId: NonNegativeInt!
+  color: HexColorCode
+  plate: String
+  state: String
+  vin: String
+  lot: String
+}
+
+input UpdateOrderShipperInput {
+  firstName: NonEmptyString
+  lastName: NonEmptyString
+  companyName: String
+  address: NonEmptyString
+  address2: String
+  email: EmailAddress
+  phone: PhoneNumber
+  phone2: PhoneNumber
+  fax: String
+  city: NonEmptyString
+  state: NonEmptyString
+  zipcode: PostalCode
+  note: String
+  noText: Boolean
+  noEmail: Boolean
+}
+
+input UpdateOrderSpotInput {
+  name: NonEmptyString
+  address: NonEmptyString
+  address2: String
+  zipcode: PostalCode
+  city: NonEmptyString
+  state: NonEmptyString
+  phone: PhoneNumber
+  phone2: PhoneNumber
+  email: EmailAddress
+}
+
+input UpdateOrderVehicleInput {
+  year: Int
+  make: NonEmptyString
+  model: NonEmptyString
+  operable: Boolean
+  sizeId: NonNegativeInt
+  color: HexColorCode
+  plate: String
+  state: String
+  vin: String
+  lot: String
+}
+
+type Lead {
+  id: ID!
+  isOrder: Boolean
+  shipper: QuoteShipper
+  origin: QuoteSpot
+  destination: QuoteSpot
+}
+
+type ParentOrChildQuote {
+  id: ID!
+  isOrder: Boolean
+}
+
+type Quote {
+  id: ID!
+  parent: ParentOrChildQuote
+  children: [ParentOrChildQuote]
+  shipper: QuoteShipper
+  origin: QuoteSpot
+  destination: QuoteSpot
+  vehicles: [QuoteVehicle!]!
+  transport: Transport
+  referrer: Referrer
+  parentStatus: Status
+  childStatus: Status
+  assignee: User
+  internalNotes: [Note!]!
+  followups: [Followup]
+  events: [Event!]
+  engagements: [String]
+}
+
+type Order {
+  id: ID!
+  parent: ParentOrChildQuote
+  children: [ParentOrChildQuote]
+  shipper: OrderShipper
+  origin: OrderSpot
+  destination: OrderSpot
+  vehicles: [OrderVehicle!]!
+  transport: Transport
+  referrer: Referrer
+  parentStatus: Status
+  childStatus: Status
+  assignee: User
+  internalNotes: [Note!]!
+  events: [Event!]
+  engagements: [String]
+  billingInfo: BillingInformation
+  transactions: [Transaction!]
+  dispatch: Dispatch
+  terms: TermsAndConditions
+}
+
+input CreateQuoteInput {
+  engagements: [String]
+  assigneeId: NonNegativeInt!
+  referrer: String
+  parentStatusId: NonNegativeInt
+  childStatusId: NonNegativeInt
+  shipper: CreateQuoteShipperInput
+  origin: CreateQuoteSpotInput
+  destination: CreateQuoteSpotInput
+  vehicles: [CreateQuoteVehicleInput!]!
+  transport: CreateTransportInput
+  internalNotes: [NoteInput!]
+  followups: [FollowupInput!]
+}
+
+input UpdateQuoteInput {
+  engagements: [String]
+  assigneeId: NonNegativeInt
+  referrer: String
+  shipper: UpdateQuoteShipperInput
+  origin: UpdateQuoteSpotInput
+  destination: UpdateQuoteSpotInput
+  vehicles: [UpdateQuoteVehicleInput]
+  transport: UpdateTransportInput
+  parentStatusId: NonNegativeInt
+  childStatusId: NonNegativeInt
+  internalNotes: [NoteInput!]
+  followups: [FollowupInput!]
+}
+
+input CreateOrderInput {
+  engagements: [String]
+  assigneeId: NonNegativeInt!
+  referrer: String
+  parentStatusId: NonNegativeInt
+  childStatusId: NonNegativeInt
+  shipper: CreateOrderShipperInput
+  origin: CreateOrderSpotInput
+  destination: CreateOrderSpotInput
+  vehicles: [CreateOrderVehicleInput!]!
+  transport: CreateTransportInput
+  internalNotes: [NoteInput!]
+}
+
+input UpdateOrderInput {
+  engagements: [String]
+  assigneeId: NonNegativeInt
+  referrer: String
+  shipper: UpdateOrderShipperInput
+  origin: UpdateOrderSpotInput
+  destination: UpdateOrderSpotInput
+  vehicles: [UpdateOrderVehicleInput]
+  transport: UpdateTransportInput
+  parentStatusId: NonNegativeInt
+  childStatusId: NonNegativeInt
+  internalNotes: [NoteInput!]
+}
+
+type CustomerQuoteShipper {
+  firstName: NonEmptyString
+  lastName: NonEmptyString
+  companyName: String
+  address: NonEmptyString
+  address2: String
+  email: EmailAddress
+  phone: PhoneNumber
+  phone2: PhoneNumber
+  city: NonEmptyString
+  state: NonEmptyString
+  zipcode: PostalCode
+  note: String
+}
+
+type CustomerQuoteSpot {
+  name: NonEmptyString
+  address: NonEmptyString
+  address2: String
+  zipcode: PostalCode
+  city: NonEmptyString
+  state: NonEmptyString
+  phone: PhoneNumber
+  phone2: PhoneNumber
+}
+
+type CustomerTransport {
+  carrierType: CARRIER_TYPE
+  availableDate: Date
+  totalPrice: PositiveFloat
+}
+
+type CustomerVehicle {
+  year: Int
+  make: NonEmptyString
+  model: NonEmptyString
+}
+
+type CustomerQuote {
+  id: ID!
+  shipper: CustomerQuoteShipper
+  origin: CustomerQuoteSpot
+  destination: CustomerQuoteSpot
+  vehicles: [CustomerVehicle!]
+  transport: CustomerTransport
+  terms: TermsAndConditions
+  isOrder: Boolean
+}
+
+input CustomerQuoteShipperInput {
+  firstName: NonEmptyString
+  lastName: NonEmptyString
+  companyName: String
+  address: NonEmptyString
+  address2: String
+  email: EmailAddress
+  phone: PhoneNumber
+  phone2: PhoneNumber
+  city: NonEmptyString
+  state: NonEmptyString
+  zipcode: PostalCode
+  note: String
+}
+
+input CustomerQuoteSpotInput {
+  name: NonEmptyString
+  address: NonEmptyString
+  address2: String
+  phone: PhoneNumber
+  phone2: PhoneNumber
+}
+
+input UpdateCustomerQuoteInput {
+  shipper: CustomerQuoteShipperInput
+  origin: CustomerQuoteSpotInput
+  destination: CustomerQuoteSpotInput
+  terms: TermsAndConditionsInput
+  billingInformation: BillingInformationInput
+}
+
+type PaginatedQuotes {
+  data: [Quote!]!
+  pageInfo: PageInfo
+}
+
+type PaginatedOrders {
+  data: [Order!]!
+  pageInfo: PageInfo
+}
+
+input LeadFilterBy {
+  search: String
+  timezone: SHIPPER_TIMEZONE
+  assigneeId: PositiveInt
+  parentStatusId: PositiveInt
+  childStatusId: PositiveInt
+  group: QUOTE_GROUP
+  dateRangeStart: Date
+  dateRangeEnd: Date
+  engagements: [String]
+}
+
+type TermsAndConditions {
+  accepted: Boolean
+  eName: String
+  eSign: String
+  clientIp: String
+  signedAt: DateTime
+}
+
+input TermsAndConditionsInput {
+  accepted: Boolean
+  eName: String
+  eSign: String
+}
+
+enum LEAD_SORT_BY {
+  ID_ASC
+  ID_DESC
+  AVAILABLE_DATE_ASC
+  AVAILABLE_DATE_DESC
+}
+
+enum DUPLICATION_MODE {
+  STANDARD
+  REVERSE
+}
+
+type PossibleDuplicates {
+  byEmailPhone: [Lead],
+  byName: [Lead]
+}
+
+type Query {
+  quote(id: ID!): Quote
+    @hasPermissions(permissions: ["quote.view"])
+    @presentResource(name: "quote")
+
+  quotes(filterBy: LeadFilterBy, sortBy: LEAD_SORT_BY, cursor: PageCursor): PaginatedQuotes
+    @hasPermissions(permissions: ["quote.view"])
+
+  quotesCount(filterBy: LeadFilterBy): QuotesCountByGroup
+    @hasPermissions(permissions: ["quote.view"])
+
+  order(id: ID!): Order
+    @hasPermissions(permissions: ["order.view"])
+    @presentResource(name: "order")
+
+  orders(filterBy: LeadFilterBy, sortBy: LEAD_SORT_BY, cursor: PageCursor): PaginatedOrders
+    @hasPermissions(permissions: ["order.view"])
+
+  ordersCount(filterBy: LeadFilterBy): QuotesCountByGroup
+    @hasPermissions(permissions: ["order.view"])
+
+  findPossibleDuplicates(id: ID!): PossibleDuplicates
+    @hasOneOfPermissions(permissions: ["quote.view", "order.view"])
+
+  powerSearch(search: String!): [Lead]
+    @hasOneOfPermissions(permissions: ["quote.view", "order.view"])
+}
+
+type Mutation {
+  calcQuotePrice(origin: JSONObject!, destination: JSONObject!, vehicles: JSON!, carrierType: CARRIER_TYPE, referrer: String): Transport
+    @hasPermissions(permissions: ["quote.view"])
+
+  createQuote(input: CreateQuoteInput!): Quote
+    @hasPermissions(permissions: ["quote.create"])
+
+  createOrder(input: CreateOrderInput!): Order
+    @hasPermissions(permissions: ["order.create"])
+
+  updateQuote(id: ID!, input: UpdateQuoteInput!): Quote
+    @hasPermissions(permissions: ["quote.update"])
+    @presentResource(name: "quote")
+    @nonNullOptionalInput(
+      paths: [
+        "input.shipper.firstName",
+        "input.shipper.phone",
+        "input.origin.city",
+        "input.origin.state",
+        "input.origin.zipcode",
+        "input.destination.city",
+        "input.destination.state",
+        "input.destination.zipcode",
+        "input.vehicles",
+        "input.transport.availableDate",
+        "input.transport.basePrice",
+        "input.transport.deposit",
+        "input.assigneeId"
+      ]
+    )
+
+  updateOrder(id: ID!, input: UpdateOrderInput!): Order
+    @hasPermissions(permissions: ["order.update"])
+    @presentResource(name: "order")
+    @nonNullOptionalInput(
+      paths: [
+        "input.shipper.firstName",
+        "input.shipper.lastName",
+        "input.shipper.address",
+        "input.shipper.email",
+        "input.shipper.phone",
+        "input.shipper.city",
+        "input.shipper.state",
+        "input.shipper.zipcode",
+        "input.origin.name",
+        "input.origin.phone",
+        "input.origin.address",
+        "input.origin.city",
+        "input.origin.state",
+        "input.origin.zipcode",
+        "input.destination.name",
+        "input.destination.phone",
+        "input.destination.address",
+        "input.destination.city",
+        "input.destination.state",
+        "input.destination.zipcode",
+        "input.vehicles",
+        "input.transport.availableDate",
+        "input.transport.basePrice",
+        "input.transport.deposit",
+        "input.assigneeId"
+      ]
+    )
+
+  reassignQuotes(ids: [ID!]!, userId: NonNegativeInt!): [Quote]
+    @hasPermissions(permissions: ["quote.update"])
+
+  reassignOrders(ids: [ID!]!, userId: NonNegativeInt!): [Order]
+    @hasPermissions(permissions: ["order.update"])
+
+  postToLoadBoard(id: ID!): Order
+    @hasOneOfPermissions(permissions: ["order.update", "order.post_to_load_board_only"])
+    @presentResource(name: "order")
+
+  removeFromLoadBoard(id: ID!): Order
+    @hasOneOfPermissions(permissions: ["order.update", "order.post_to_load_board_only"])
+    @presentResource(name: "order")
+
+  duplicateQuote(id: ID!, mode: DUPLICATION_MODE): Quote
+    @hasPermissions(permissions: ["quote.create"])
+    @presentResource(name: "quote")
+
+  duplicateOrder(id: ID!, mode: DUPLICATION_MODE): Order
+    @hasPermissions(permissions: ["order.create"])
+    @presentResource(name: "order")
+
+  sendQuoteEmail(id: ID!, emailTemplateId: ID!): Boolean
+    @hasOneOfPermissions(permissions: ["quote.contact_shipper", "order.contact_shipper"])
+
+  sendQuoteSMS(id: ID!, smsTemplateId: ID!): Boolean
+    @hasOneOfPermissions(permissions: ["quote.contact_shipper", "order.contact_shipper"])
+
+  sendTermsAndConditionsEmail(id: ID!): Boolean
+    @hasPermissions(permissions: ["order.contact_shipper"])
+    @presentResource(name: "order")
+
+  sendBillingInfoInputEmail(id: ID!): Boolean
+    @hasPermissions(permissions: ["order.contact_shipper"])
+    @presentResource(name: "order")
+
+  convertToOrder(quoteId: ID!, input: CreateOrderInput!): Order
+    @hasPermissions(permissions: ["quote.update", "order.create"])
+    @presentResource(name: "quote", key: "quoteId")
+
+  convertToQuote(orderId: ID!, input: CreateQuoteInput!): Quote
+    @hasPermissions(permissions: ["order.update", "quote.create"])
+    @presentResource(name: "order", key: "orderId")
+
+  setBillingInfoToOrder(orderId: ID!, input: BillingInformationInput!): Order
+    @hasPermissions(permissions: ["payment.manual_add"])
+    @presentResource(name: "order", key: "orderId")
+
+  chargeOrder(orderId: ID!, amount: Int!, note: String): Order
+    @hasPermissions(permissions: ["payment.charge"])
+    @presentResource(name: "order", key: "orderId")
+
+  dispatchOrder(orderId: ID!, input: CreateDispatchInput!): Order
+    @hasPermissions(permissions: ["order.dispatch_only"])
+    @presentResource(name: "order", key: "orderId")
+
+  updateQuoteByCustomer(encryption: String!, input: UpdateCustomerQuoteInput!): Void
+    @nonNullOptionalInput(
+      paths: [
+        "input.shipper.firstName",
+        "input.shipper.lastName",
+        "input.shipper.address",
+        "input.shipper.email",
+        "input.shipper.phone",
+        "input.shipper.city",
+        "input.shipper.state",
+        "input.shipper.zipcode",
+        "input.origin.name",
+        "input.origin.phone",
+        "input.origin.address",
+        "input.destination.name",
+        "input.destination.phone",
+        "input.destination.address",
+        "input.terms.accepted",
+        "input.terms.eName",
+        "input.terms.eSign",
+        "input.billingAddress.firstName",
+        "input.billingAddress.lastName",
+        "input.billingAddress.email",
+        "input.billingAddress.address",
+        "input.billingAddress.city",
+        "input.billingAddress.state",
+        "input.billingAddress.zipcode",
+        "input.creditCard.cardNumber",
+        "input.creditCard.exprMonth",
+        "input.creditCard.exprYear",
+        "input.creditCard.cvv"
+      ]
+    )
+
+  acceptTermsAndConditions(encryption: String!, input: TermsAndConditionsInput!): Void
+    @nonNullOptionalInput(
+      paths: [
+        "input.accepted",
+        "input.eName",
+        "input.eSign"
+      ]
+    )
+
+  provideBillingInfo(encryption: String!, input: BillingInformationInput!): Void
+    @nonNullOptionalInput(
+      paths: [
+        "input.billingAddress.firstName",
+        "input.billingAddress.lastName",
+        "input.billingAddress.email",
+        "input.billingAddress.address",
+        "input.billingAddress.city",
+        "input.billingAddress.state",
+        "input.billingAddress.zipcode",
+        "input.creditCard.cardNumber",
+        "input.creditCard.exprMonth",
+        "input.creditCard.exprYear",
+        "input.creditCard.cvv"
+      ]
+    )
+
+  getExperiencedCarriers(orderId: ID!): [Carrier]
+}

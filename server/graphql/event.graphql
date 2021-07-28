@@ -1,0 +1,10 @@
+type Event {
+  id: ID!
+  description: String!
+  eventDate: DateTime
+}
+
+type Query {
+  quoteEvents(id: ID!): [Event]
+    @hasPermissions(permissions: ["quote.view"])
+}

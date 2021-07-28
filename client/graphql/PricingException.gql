@@ -1,0 +1,78 @@
+fragment PricingRule on PricingRule {
+  originRadius
+  destRadius
+  price
+}
+
+fragment PricingException on PricingException {
+  id
+  originState
+  originCity
+  destState
+  destCity
+  rules {
+    ...PricingRule
+  }
+}
+
+query GetPricingExceptions(
+  $filter: PricingExceptionsFilter
+  $cursor: PageCursor
+) {
+  pricingExceptions(filter: $filter, cursor: $cursor) {
+    data {
+      ...PricingException
+    }
+    pageInfo {
+      page
+      size
+      total
+    }
+  }
+}
+
+mutation CreatePricingException(
+  $originState: String
+  $originCity: String
+  $destState: String
+  $destCity: String
+  $pricingRules: [PricingRuleInput]
+) {
+  createPricingException(
+    originState: $originState
+    originCity: $originCity
+    destState: $destState
+    destCity: $destCity
+    pricingRules: $pricingRules
+  ) {
+    ...PricingException
+  }
+}
+
+mutation UpdatePricingException(
+  $pricingExceptionID: ID!
+  $priority: Int
+  $pricingRule: PricingRuleInput
+) {
+  updatePricingRule(
+    pricingExceptionID: $pricingExceptionID
+    priority: $priority
+    pricingRule: $pricingRule
+  ) {
+    ...PricingException
+  }
+}
+
+mutation UpdatePricingExceptions(
+  $pricingExceptionIDs: [ID!]
+  $priority: Int
+  $pricingRule: PricingRuleInput
+) {
+  updatePricingRules(
+    pricingExceptionIDs: $pricingExceptionIDs
+    priority: $priority
+    pricingRule: $pricingRule
+  ) {
+    ...PricingException
+  }
+}

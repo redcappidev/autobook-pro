@@ -1,0 +1,130 @@
+enum ROLE {
+  SUPERADMIN
+  ADMIN
+  MANAGER
+  SALES
+  DISPATCH
+  SUPPORT
+}
+
+enum USER_STATUS {
+  ACTIVATED
+  DEACTIVATED
+}
+
+type Role {
+  id: ID!
+  name: String!
+}
+
+type UserLeadSchedule {
+  sundayStart: String
+  sundayEnd: String
+  mondayStart: String
+  mondayEnd: String
+  tuesdayStart: String
+  tuesdayEnd: String
+  wednesdayStart: String
+  wednesdayEnd: String
+  thursdayStart: String
+  thursdayEnd: String
+  fridayStart: String
+  fridayEnd: String
+  saturdayStart: String
+  saturdayEnd: String
+  wholeDay: Boolean
+  pause: Boolean
+  ratio: PositiveInt
+  maxCap: PositiveInt
+}
+
+input UserLeadScheduleInput {
+  sundayStart: String
+  sundayEnd: String
+  mondayStart: String
+  mondayEnd: String
+  tuesdayStart: String
+  tuesdayEnd: String
+  wednesdayStart: String
+  wednesdayEnd: String
+  thursdayStart: String
+  thursdayEnd: String
+  fridayStart: String
+  fridayEnd: String
+  saturdayStart: String
+  saturdayEnd: String
+  wholeDay: Boolean
+  pause: Boolean
+  ratio: PositiveInt
+  maxCap: PositiveInt
+}
+
+type User {
+  id: ID!
+  firstName: String!
+  lastName: String
+  email: EmailAddress!
+  role: Role!
+  permissions: String
+  status: USER_STATUS
+  leadSchedule: UserLeadSchedule
+  createdAt: DateTime!
+}
+
+input UserProfileInput {
+  firstName: String!
+  lastName: String
+  phoneNumber: PhoneNumber
+}
+
+type TeamMember {
+  firstName: String!
+  lastName: String!
+  ext: String
+  email: String!
+}
+
+type Invitation {
+  email: String!
+}
+
+type Query {
+  currentUser: User
+    @isAuthenticated
+
+  users: [User!]
+    @hasOneOfPermissions(permissions: ["user.view", "quote.view", "order.view"])
+
+  teamMembers: [TeamMember]
+    @isAuthenticated
+
+  roles: [Role!]
+    @isAuthenticated
+}
+
+type Mutation {
+  updateUserLeadSchedule(id: ID!, input: UserLeadScheduleInput): User
+    @presentResource(name: "user")
+    @hasRole(role: SUPERADMIN)
+
+  updateUserAccess(id: ID!, roleId: ID!, permissions: String): User
+    @presentResource(name: "user")
+    @hasPermissions(permissions: ["permission.update"])
+
+  updateUserProfile(id: ID!, input: UserProfileInput!): User
+    @presentResource(name: "user")
+    @hasPermissions(permissions: ["user.update"])
+
+  resolveInvitationLink(encryption: String!): Invitation
+
+  inviteUser(email: String!, roleId: ID!, permissions: String): String
+    @hasPermissions(permissions: ["user.create"])
+
+  activateUser(id: ID!): User
+    @presentResource(name: "user")
+    @hasPermissions(permissions: ["user.update"])
+
+  deactivateUser(id: ID!): User
+    @presentResource(name: "user")
+    @hasPermissions(permissions: ["user.update"])
+}

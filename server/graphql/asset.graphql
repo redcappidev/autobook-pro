@@ -1,0 +1,21 @@
+type Asset {
+  id: ID!
+  fileUrl: String!
+  fileName: String!
+}
+
+input AssetInput {
+  fileUrl: String!
+  fileName: String!
+}
+
+type Mutation {
+  createUploadForm(fileName: String!): JSON
+    @isAuthenticated
+  attachFileToQuote(id: ID!, asset: AssetInput!): Asset
+    @hasPermissions(permissions: ["quote.add_edit"])
+    @presentResource(name: "quote", key: "id")
+  attachFileToCarrier(id: ID!, category: CARRIER_FILE_CATEGORY!, asset: AssetInput!): Asset
+    @hasPermissions(permissions: ["carrier.add_edit"])
+    @presentResource(name: "carrier", key: "id")
+}

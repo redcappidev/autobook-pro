@@ -1,0 +1,27 @@
+type EnclosedFee {
+  id: ID!
+  minMileage: NonNegativeInt
+  maxMileage: NonNegativeInt
+  fee: PositiveFloat
+  order: NonNegativeInt
+}
+
+input EnclosedFeeInput {
+  id: ID
+  minMileage: NonNegativeInt
+  maxMileage: NonNegativeInt
+  fee: PositiveFloat
+  order: NonNegativeInt
+}
+
+type Query {
+  enclosedFees: [EnclosedFee!]!
+    @hasPermissions(permissions: ["taq.view"])
+}
+
+type Mutation {
+  updateEnclosedFees(feeData: [EnclosedFeeInput!]!): [EnclosedFee!]!
+    @hasPermissions(permissions: ["taq.update"])
+  deleteEnclosedFees(ids: [ID!]!): Void
+    @hasPermissions(permissions: ["taq.update"])
+}

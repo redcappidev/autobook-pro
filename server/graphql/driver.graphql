@@ -1,0 +1,40 @@
+type Driver {
+  id: ID!
+  firstName: String!
+  lastName: String
+  email: EmailAddress
+  phoneNumber: PhoneNumber!
+  carrier: Carrier
+}
+
+input CreateDriverInput {
+  firstName: String!
+  lastName: String
+  email: EmailAddress
+  phoneNumber: PhoneNumber!
+}
+
+input UpdateDriverInput {
+  firstName: NonEmptyString
+  lastName: String
+  email: EmailAddress
+  phoneNumber: PhoneNumber
+}
+
+type Mutation {
+  addDriver(carrierId: ID!, input: CreateDriverInput!): Driver
+    @hasOneOfPermissions(permissions: ["carrier.update", "order.dispatch_only"])
+    @presentResource(name: "carrier", key: "carrierId")
+  updateDriver(id: ID!, input: UpdateDriverInput!): Driver
+    @hasPermissions(permissions: ["carrier.update"])
+    @presentResource(name: "driver")
+    @nonNullOptionalInput(
+      paths: [
+        "input.firstName",
+        "input.phoneNumber"
+      ]
+    )
+  deleteDriver(id: ID!): ID!
+    @hasPermissions(permissions: ["carrier.update"])
+    @presentResource(name: "driver")
+}

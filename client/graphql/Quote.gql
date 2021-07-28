@@ -1,0 +1,351 @@
+fragment Shipper on QuoteShipper {
+  firstName
+  lastName
+  email
+  phone
+  phone2
+  noText
+  noEmail
+}
+
+fragment Spot on QuoteSpot {
+  name
+  address
+  zipcode
+  city
+  state
+  phone
+  phone2
+}
+
+fragment Vehicle on QuoteVehicle {
+  year
+  make
+  model
+  operable
+  size {
+    id
+    name
+  }
+}
+
+fragment Transport on Transport {
+  miles
+  carrierType
+  availableDate
+  deliveryDate
+  basePrice
+  sizeFee
+  inopFee
+  enclosedFee
+  deposit
+  fullPay
+  totalPrice
+}
+
+fragment ClientFacingQuoteDetail on CustomerQuote {
+  id
+  shipper {
+    firstName
+    lastName
+    companyName
+    address
+    address2
+    email
+    phone
+    phone2
+    city
+    state
+    zipcode
+    note
+  }
+  origin {
+    name
+    address
+    address2
+    zipcode
+    city
+    state
+    phone
+    phone2
+  }
+  destination {
+    name
+    address
+    address2
+    zipcode
+    city
+    state
+    phone
+    phone2
+  }
+  vehicles {
+    year
+    make
+    model
+  }
+  transport {
+    carrierType
+    availableDate
+    totalPrice
+  }
+  terms {
+    accepted
+    eName
+    eSign
+  }
+  isOrder
+}
+
+fragment QuoteDetail on Quote {
+  id
+  parent {
+    id
+    isOrder
+  }
+  children {
+    id
+    isOrder
+  }
+  shipper {
+    ...Shipper
+  }
+  origin {
+    ...Spot
+  }
+  destination {
+    ...Spot
+  }
+  vehicles {
+    ...Vehicle
+  }
+  transport {
+    ...Transport
+  }
+  referrer {
+    value
+    label
+  }
+  assignee {
+    id
+    firstName
+    lastName
+  }
+  parentStatus {
+    id
+    name
+  }
+  childStatus {
+    id
+    name
+  }
+  internalNotes {
+    id
+    note
+    # assignees {
+    #   user {
+    #     id
+    #   }
+    #   viewed
+    #   viewedAt
+    # }
+  }
+  followups {
+    id
+    followupOn
+  }
+  events {
+    id
+    description
+    eventDate
+  }
+  engagements
+}
+
+fragment QuoteSummary on Quote {
+  id
+  shipper {
+    firstName
+    lastName
+    email
+    phone
+  }
+  origin {
+    zipcode
+    city
+    state
+  }
+  destination {
+    zipcode
+    city
+    state
+  }
+  vehicles {
+    year
+    make
+    model
+    operable
+  }
+  transport {
+    availableDate
+    fullPay
+    totalPrice
+  }
+  engagements
+}
+
+query PowerSearch($search: String!) {
+  powerSearch(search: $search) {
+    id
+    isOrder
+    shipper {
+      firstName
+      lastName
+    }
+    origin {
+      city
+      state
+    }
+    destination {
+      city
+      state
+    }
+  }
+}
+
+query LoadQuotes(
+  $filterBy: LeadFilterBy
+  $sortBy: LEAD_SORT_BY
+  $cursor: PageCursor
+) {
+  quotes(filterBy: $filterBy, sortBy: $sortBy, cursor: $cursor) {
+    data {
+      ...QuoteSummary
+    }
+    pageInfo {
+      page
+      size
+      total
+    }
+  }
+}
+
+query FindPossibleDuplicates($id: ID!) {
+  findPossibleDuplicates(id: $id) {
+    byEmailPhone {
+      id
+      isOrder
+    }
+    byName {
+      id
+      isOrder
+    }
+  }
+}
+
+query GetQuotesCount($filterBy: LeadFilterBy) {
+  quotesCount(filterBy: $filterBy) {
+    today
+    week
+    month
+    pastDue
+    all
+  }
+}
+
+query GetQuote($id: ID!) {
+  quote(id: $id) {
+    ...QuoteDetail
+  }
+}
+
+query GetQuoteEvents($id: ID!) {
+  quoteEvents(id: $id) {
+    id
+    description
+    eventDate
+  }
+}
+
+mutation CalcQuotePrice(
+  $origin: JSONObject!
+  $destination: JSONObject!
+  $vehicles: JSON!
+  $carrierType: CARRIER_TYPE
+  $referrer: String
+) {
+  calcQuotePrice(
+    origin: $origin
+    destination: $destination
+    vehicles: $vehicles
+    carrierType: $carrierType
+    referrer: $referrer
+  ) {
+    basePrice
+    sizeFee
+    inopFee
+    enclosedFee
+    deposit
+    fullPay
+    totalPrice
+  }
+}
+
+mutation CreateQuote($input: CreateQuoteInput!) {
+  createQuote(input: $input) {
+    ...QuoteDetail
+  }
+}
+
+mutation UpdateQuote($id: ID!, $input: UpdateQuoteInput!) {
+  updateQuote(id: $id, input: $input) {
+    ...QuoteDetail
+  }
+}
+
+mutation ReassignQuotes($ids: [ID!]!, $userId: NonNegativeInt!) {
+  reassignQuotes(ids: $ids, userId: $userId) {
+    ...QuoteDetail
+  }
+}
+
+mutation DuplicateQuote($id: ID!, $mode: DUPLICATION_MODE) {
+  duplicateQuote(id: $id, mode: $mode) {
+    ...QuoteDetail
+  }
+}
+
+mutation SendQuoteEmail($id: ID!, $emailTemplateId: ID!) {
+  sendQuoteEmail(id: $id, emailTemplateId: $emailTemplateId)
+}
+
+mutation SendTermsAndConditionsEmail($id: ID!) {
+  sendTermsAndConditionsEmail(id: $id)
+}
+
+mutation SendBillingInfoInputEmail($id: ID!) {
+  sendBillingInfoInputEmail(id: $id)
+}
+
+mutation SendQuoteSMS($id: ID!, $smsTemplateId: ID!) {
+  sendQuoteSMS(id: $id, smsTemplateId: $smsTemplateId)
+}
+
+mutation ConvertToQuote($orderId: ID!, $input: CreateQuoteInput!) {
+  convertToQuote(orderId: $orderId, input: $input) {
+    ...QuoteDetail
+  }
+}
+
+mutation ResolveBookOrderLink($encryption: String!) {
+  resolveBookOrderLink(encryption: $encryption) {
+    ...ClientFacingQuoteDetail
+  }
+}
+
+mutation UpdateQuoteByCustomer(
+  $encryption: String!
+  $input: UpdateCustomerQuoteInput!
+) {
+  updateQuoteByCustomer(encryption: $encryption, input: $input)
+}

@@ -1,0 +1,108 @@
+fragment UserQuotesMonthlyTotals on UserQuotesMonthlyTotals {
+  userId
+  name
+  newQuotes
+  newFollowups
+  newOrders
+  newDispatches
+}
+
+fragment QuotesMonthlyTotals on QuotesMonthlyTotals {
+  newQuotes
+  newFollowups
+  newOrders
+  newDispatches
+}
+
+fragment Quote on Quote {
+  id
+  shipper {
+    firstName
+    lastName
+    phone
+  }
+  origin {
+    city
+    state
+    zipcode
+  }
+  destination {
+    city
+    state
+    zipcode
+  }
+  transport {
+    totalPrice
+  }
+}
+
+fragment Order on Order {
+  id
+  shipper {
+    firstName
+    lastName
+    phone
+  }
+  origin {
+    city
+    state
+    zipcode
+  }
+  destination {
+    city
+    state
+    zipcode
+  }
+  transport {
+    totalPrice
+  }
+}
+
+fragment Transaction on Transaction {
+  order {
+    id
+  }
+  amount
+  note
+  createdAt
+}
+
+query GetQuotesMonthlyTotals {
+  quotesMonthlyTotals {
+    byMe {
+      ...UserQuotesMonthlyTotals
+    }
+    byCompany {
+      ...QuotesMonthlyTotals
+    }
+    byUsers {
+      ...UserQuotesMonthlyTotals
+    }
+  }
+}
+
+query GetUserQuotesDailyTotals($startDate: Date, $endDate: Date) {
+  userQuotesDailyTotals(startDate: $startDate, endDate: $endDate) {
+    date
+    quotes {
+      ...Quote
+    }
+    followups {
+      quote {
+        ...Quote
+      }
+    }
+    orders {
+      ...Order
+    }
+    dispatches {
+      id
+    }
+  }
+}
+
+query GetTodayTransactions {
+  todayTransactions {
+    ...Transaction
+  }
+}

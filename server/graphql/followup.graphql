@@ -1,0 +1,63 @@
+input FollowupInput {
+  id: ID
+  followupOn: Date!
+}
+
+type Followup {
+  id: ID!
+  type: FollowupType!
+  notext: Boolean
+  nofurther: Boolean
+  note: String
+  followupOn: Date!
+  quote: Quote
+}
+
+input CreateFollowupInput {
+  quoteId: PositiveInt!
+  typeId: PositiveInt!
+  notext: Boolean
+  nofurther: Boolean
+  note: String
+  followupOn: Date!
+}
+
+type PaginatedFollowups {
+  data: [Followup!]!
+  pageInfo: PageInfo
+}
+
+input FollowupsFilterBy {
+  search: String,
+  timezone: SHIPPER_TIMEZONE
+  assigneeId: PositiveInt
+  parentStatusId: PositiveInt
+  childStatusId: PositiveInt
+  group: QUOTE_GROUP
+  dateRangeStart: Date
+  dateRangeEnd: Date
+  engagements: [String]
+}
+
+enum FOLLOWUP_SORT_BY {
+  ID_ASC
+  ID_DESC
+  FOLLOWUP_DATE_ASC
+  FOLLOWUP_DATE_DESC
+}
+
+type Query {
+  followup(quoteId: ID!): Followup
+    @hasPermissions(permissions: ["quote.view"])
+
+  followups(filterBy: FollowupsFilterBy, sortBy: FOLLOWUP_SORT_BY, cursor: PageCursor): PaginatedFollowups
+    @hasPermissions(permissions: ["quote.view"])
+
+  followupsCount(filterBy: FollowupsFilterBy): QuotesCountByGroup
+    @hasPermissions(permissions: ["quote.view"])
+}
+
+type Mutation {
+  createFollowup(input: CreateFollowupInput!): Followup
+    @hasPermissions(permissions: ["quote.update"])
+}

@@ -1,0 +1,16 @@
+type AccountPhoneNumber {
+  id: ID!
+  number: PhoneNumber!
+  extension: String!
+  user: User!
+}
+
+type Query {
+  phoneNumber: AccountPhoneNumber
+    @isAuthenticated
+}
+
+type Mutation {
+  setPhoneNumber(number: PhoneNumber!, extension: String!): AccountPhoneNumber
+    @isAuthenticated
+}

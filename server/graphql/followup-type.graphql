@@ -1,0 +1,20 @@
+type FollowupType {
+  id: ID!
+  name: String!
+  smsTemplate: SMSTemplate
+}
+
+input CreateFollowupTypeInput {
+  name: String!
+  smsTemplateId: PositiveInt
+}
+
+type Query {
+  followupTypes: [FollowupType!]!
+    @hasPermissions(permissions: ["followup_type.view"])
+}
+
+type Mutation {
+  createFollowupType(input: CreateFollowupTypeInput!): FollowupType
+    @hasPermissions(permissions: ["followup_type.add_edit"])
+}

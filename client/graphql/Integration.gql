@@ -1,0 +1,17 @@
+fragment AccountPhoneNumber on AccountPhoneNumber {
+  id
+  number
+  extension
+}
+
+query GetPhoneNumber {
+  phoneNumber {
+    ...AccountPhoneNumber
+  }
+}
+
+mutation SetPhoneNumber($number: PhoneNumber!, $extension: String!) {
+  setPhoneNumber(number: $number, extension: $extension) {
+    ...AccountPhoneNumber
+  }
+}

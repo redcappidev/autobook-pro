@@ -1,0 +1,11 @@
+mutation CreateUploadForm($fileName: String!) {
+  createUploadForm(fileName: $fileName)
+}
+
+mutation AttachFileToQuote($id: ID!, $asset: AssetInput!) {
+  attachFileToQuote(id: $id, asset: $asset) {
+    id
+    fileName
+    fileUrl
+  }
+}

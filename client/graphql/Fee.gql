@@ -1,0 +1,41 @@
+fragment EnclosedFee on EnclosedFee {
+  id
+  minMileage
+  maxMileage
+  fee
+  order
+}
+
+fragment Fee on Fee {
+  id
+  slug
+  fee
+}
+
+query GetEnclosedFees {
+  enclosedFees {
+    ...EnclosedFee
+  }
+}
+
+query GetFees {
+  fees {
+    ...Fee
+  }
+}
+
+mutation UpdateEnclosedFees($feeData: [EnclosedFeeInput!]!) {
+  updateEnclosedFees(feeData: $feeData) {
+    ...EnclosedFee
+  }
+}
+
+mutation UpdateFees($feeData: [FeeInput!]!) {
+  updateFees(feeData: $feeData) {
+    ...Fee
+  }
+}
+
+mutation DeleteEnclosedFees($ids: [ID!]!) {
+  deleteEnclosedFees(ids: $ids)
+}

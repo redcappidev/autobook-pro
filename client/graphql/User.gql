@@ -1,0 +1,105 @@
+fragment UserLeadSchedule on UserLeadSchedule {
+  sundayStart
+  sundayEnd
+  mondayStart
+  mondayEnd
+  tuesdayStart
+  tuesdayEnd
+  wednesdayStart
+  wednesdayEnd
+  thursdayStart
+  thursdayEnd
+  fridayStart
+  fridayEnd
+  saturdayStart
+  saturdayEnd
+  wholeDay
+  pause
+  ratio
+  maxCap
+}
+
+fragment User on User {
+  id
+  firstName
+  lastName
+  email
+  role {
+    id
+    name
+  }
+  permissions
+  status
+  leadSchedule {
+    ...UserLeadSchedule
+  }
+  createdAt
+}
+
+query CurrentUser {
+  currentUser {
+    ...User
+  }
+}
+
+query LoadUsers {
+  users {
+    ...User
+  }
+}
+
+query GetRoles {
+  roles {
+    id
+    name
+  }
+}
+
+query GetTeamMembers {
+  teamMembers {
+    firstName
+    lastName
+    ext
+    email
+  }
+}
+
+mutation UpdateUserLeadSchedule($id: ID!, $input: UserLeadScheduleInput) {
+  updateUserLeadSchedule(id: $id, input: $input) {
+    ...User
+  }
+}
+
+mutation UpdateUserAccess($id: ID!, $roleId: ID!, $permissions: String) {
+  updateUserAccess(id: $id, roleId: $roleId, permissions: $permissions) {
+    ...User
+  }
+}
+
+mutation UpdateUserProfile($id: ID!, $input: UserProfileInput!) {
+  updateUserProfile(id: $id, input: $input) {
+    ...User
+  }
+}
+
+mutation ResolveInvitationLink($encryption: String!) {
+  resolveInvitationLink(encryption: $encryption) {
+    email
+  }
+}
+
+mutation InviteUser($email: String!, $roleId: ID!, $permissions: String) {
+  inviteUser(email: $email, roleId: $roleId, permissions: $permissions)
+}
+
+mutation ActivateUser($id: ID!) {
+  activateUser(id: $id) {
+    ...User
+  }
+}
+
+mutation DeactivateUser($id: ID!) {
+  deactivateUser(id: $id) {
+    ...User
+  }
+}

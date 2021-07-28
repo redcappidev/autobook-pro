@@ -1,0 +1,34 @@
+type SMSTemplate {
+  id: ID!
+  name: String!
+  script: String!
+}
+
+input CreateSMSTemplateInput {
+  name: String!
+  script: String!
+}
+
+input UpdateSMSTemplateInput {
+  name: String!
+  script: String!
+}
+
+type Query {
+  smsTemplate(id: ID!): SMSTemplate
+    @hasPermissions(permissions: ["sms_template.view"])
+
+  smsTemplates: [SMSTemplate!]!
+    @hasOneOfPermissions(permissions: ["sms_template.view", "quote.view", "order.view", "status.view", "status.update"])
+}
+
+type Mutation {
+  createSMSTemplate(input: CreateSMSTemplateInput!): SMSTemplate
+    @hasPermissions(permissions: ["sms_template.create"])
+
+  updateSMSTemplate(id: ID!, input: UpdateSMSTemplateInput!): SMSTemplate
+    @hasPermissions(permissions: ["sms_template.update"])
+
+  deleteSMSTemplate(id: ID!): String
+    @hasPermissions(permissions: ["sms_template.update"])
+}

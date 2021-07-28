@@ -1,0 +1,53 @@
+fragment EmailTemplate on EmailTemplate {
+  id
+  name
+  emailFrom
+  emailFromName
+  replyTo
+  emailSubject
+  emailBcc
+  htmlBody
+  placeholders
+  statusOnOpen {
+    id
+    type
+    name
+  }
+  statusOnClick {
+    id
+    type
+    name
+  }
+  referrers {
+    label
+    value
+  }
+}
+
+query GetEmailTemplate($id: ID!) {
+  emailTemplate(id: $id) {
+    ...EmailTemplate
+  }
+}
+
+query GetEmailTemplates {
+  emailTemplates {
+    ...EmailTemplate
+  }
+}
+
+mutation CreateEmailTemplate($input: CreateEmailTemplateInput) {
+  createEmailTemplate(input: $input) {
+    ...EmailTemplate
+  }
+}
+
+mutation UpdateEmailTemplate($id: ID!, $input: UpdateEmailTemplateInput) {
+  updateEmailTemplate(templateId: $id, input: $input) {
+    ...EmailTemplate
+  }
+}
+
+mutation DeleteEmailTemplate($id: ID!) {
+  deleteEmailTemplate(templateId: $id)
+}

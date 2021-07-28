@@ -1,0 +1,23 @@
+fragment MileagePricing on MileagePricing {
+  id
+  minMileage
+  maxMileage
+  price
+  order
+}
+
+query GetMileagePricings {
+  mileagePricings {
+    ...MileagePricing
+  }
+}
+
+mutation UpdateMileagePricings($pricingData: [MileagePricingInput!]!) {
+  updateMileagePricings(pricingData: $pricingData) {
+    ...MileagePricing
+  }
+}
+
+mutation DeleteMileagePricings($ids: [ID!]!) {
+  deleteMileagePricings(ids: $ids)
+}

@@ -1,0 +1,134 @@
+enum CONTACT_OPTION {
+  PHONE_ONLY
+  FAX_ONLY
+  EMAIL_ONLY
+  USE_ALL
+}
+
+enum CARRIER_TYPE {
+  OPEN
+  ENCLOSED
+}
+
+enum CARRIER_FILE_CATEGORY {
+  INSURANCE_CERTIFICATE
+  W9
+  CARRIER_AUTHORITY
+  OTHER
+}
+
+enum CARRIER_SORT_BY {
+  ID_ASC
+  ID_DESC
+  NAME_ASC
+  NAME_DESC
+  MC_NUMBER_ASC
+  MC_NUMBER_DESC
+  LOCATION_ASC
+  LOCATION_DESC
+}
+
+type Carrier {
+  id: ID!
+  mcNumber: String
+  dotNumber: String
+  companyName: String
+  address: String
+  city: String
+  state: String
+  zipcode: String
+  phoneNumber: PhoneNumber
+  fax: String
+  firstContact: String
+  secondContact: String
+  insuranceExpires: String
+  email: EmailAddress
+  contactOption: CONTACT_OPTION
+  needs1099: Boolean
+  ein: String
+  ssn: String
+  customField1: String
+  customField2: String
+  customField3: String
+  customField4: String
+  attachments: [Asset]
+  drivers: [Driver]
+  notes: [Note]
+  dispatches: [Dispatch]
+}
+
+type PaginatedCarriers
+{
+  data: [Carrier!]!,
+  pageInfo: PageInfo
+}
+
+input CreateCarrierInput {
+  mcNumber: String
+  dotNumber: String
+  companyName: String!
+  address: String!
+  city: String
+  state: String
+  zipcode: PostalCode
+  phoneNumber: PhoneNumber!
+  fax: String
+  firstContact: String
+  secondContact: String
+  insuranceExpires: String
+  email: EmailAddress
+  contactOption: CONTACT_OPTION
+  needs1099: Boolean
+  ein: String
+  ssn: String
+  customField1: String
+  customField2: String
+  customField3: String
+  customField4: String
+}
+
+input UpdateCarrierInput {
+  mcNumber: String
+  dotNumber: String
+  companyName: NonEmptyString
+  address: NonEmptyString
+  city: NonEmptyString
+  state: NonEmptyString
+  zipcode: PostalCode
+  phoneNumber: PhoneNumber
+  fax: String
+  firstContact: NonEmptyString
+  secondContact: String
+  insuranceExpires: String
+  email: EmailAddress
+  contactOption: CONTACT_OPTION
+  needs1099: Boolean
+  ein: String
+  ssn: String
+  customField1: String
+  customField2: String
+  customField3: String
+  customField4: String
+}
+
+type Query {
+  carrier(id: ID!): Carrier
+    @hasOneOfPermissions(permissions: ["carrier.view", "order.dispatch_only"])
+  carriers( search: String, sortBy: CARRIER_SORT_BY, cursor: PageCursor): PaginatedCarriers
+    @hasOneOfPermissions(permissions: ["carrier.view"])
+}
+
+type Mutation {
+  addCarrier(input: CreateCarrierInput!): Carrier
+    @hasOneOfPermissions(permissions: ["carrier.create", "order.dispatch_only"])
+  updateCarrier(id: ID!, input: UpdateCarrierInput!): Carrier
+    @hasPermissions(permissions: ["carrier.update"])
+    @presentResource(name: "carrier")
+    @nonNullOptionalInput(
+      paths: [
+        "input.companyName",
+        "input.address",
+        "input.phoneNumber"
+      ]
+    )
+}

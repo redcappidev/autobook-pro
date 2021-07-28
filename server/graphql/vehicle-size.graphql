@@ -1,0 +1,23 @@
+type VehicleSize {
+  id: ID!
+  name: String!
+  rateBump: Int
+  flatBump: Int
+}
+
+type Query {
+  vehicleSizes: [VehicleSize!]!
+    @hasOneOfPermissions(permissions: ["taq.view", "quote.view", "order.view"])
+}
+
+type Mutation {
+  createVehicleSize(name: String): VehicleSize
+    @hasPermissions(permissions: ["taq.update"])
+  updateVehicleSizePricing(
+    vehicleSizeID: ID!
+    rateBump: Int
+    flatBump: Int
+  ): VehicleSize @hasPermissions(permissions: ["taq.update"])
+  deleteVehicleSize(vehicleSizeID: ID!): VehicleSize
+    @hasPermissions(permissions: ["taq.update"])
+}

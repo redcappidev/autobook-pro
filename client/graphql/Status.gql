@@ -1,0 +1,62 @@
+fragment Status on Status {
+  id
+  type
+  name
+  parent {
+    id
+    type
+    name
+  }
+  children {
+    id
+    type
+    name
+    emailTemplate {
+      id
+      name
+    }
+    smsTemplate {
+      id
+      name
+    }
+  }
+  childrenCount
+  emailTemplate {
+    id
+    name
+  }
+  smsTemplate {
+    id
+    name
+  }
+}
+
+query GetStatus($id: ID!) {
+  status(id: $id) {
+    ...Status
+  }
+}
+
+query GetParentStatus($type: StatusType!) {
+  parentStatuses(type: $type) {
+    ...Status
+  }
+}
+
+mutation UpdateStatus($id: ID!, $input: UpdateStatusInput) {
+  updateStatus(id: $id, input: $input) {
+    ...Status
+  }
+}
+
+mutation CreateStatus($input: CreateStatusInput!) {
+  createStatus(input: $input) {
+    ...Status
+  }
+}
+
+mutation DeleteStatus($id: ID!) {
+  deleteStatus(id: $id) {
+    id
+  }
+}

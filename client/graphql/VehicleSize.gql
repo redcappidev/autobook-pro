@@ -1,0 +1,66 @@
+fragment VehicleSize on VehicleSize {
+  id
+  name
+  rateBump
+  flatBump
+}
+
+fragment VehicleSizeChart on VehicleSizeChart {
+  id
+  year
+  make
+  model
+  size {
+    ...VehicleSize
+  }
+  dontQuote
+  search
+}
+
+query GetVehicleSizes {
+  vehicleSizes {
+    ...VehicleSize
+  }
+}
+
+mutation UpdateVehicleSize(
+  $vehicleSizeID: ID!
+  $rateBump: Int
+  $flatBump: Int
+) {
+  updateVehicleSizePricing(
+    vehicleSizeID: $vehicleSizeID
+    rateBump: $rateBump
+    flatBump: $flatBump
+  ) {
+    ...VehicleSize
+  }
+}
+
+query GetVehicleSizechart(
+  $filter: VehicleSizeChartFilter
+  $cursor: PageCursor
+) {
+  vehicleSizeCharts(filter: $filter, cursor: $cursor) {
+    data {
+      ...VehicleSizeChart
+    }
+    pageInfo {
+      page
+      size
+      total
+    }
+  }
+}
+
+mutation UpdateVehicleSizechart($sizeChartID: ID!, $sizeID: Int!) {
+  updateVehicleSizeChartSize(sizeChartID: $sizeChartID, sizeID: $sizeID) {
+    ...VehicleSizeChart
+  }
+}
+
+mutation DeleteVehicleSizechart($sizeChartID: ID!) {
+  deleteVehicleSizeChart(sizeChartID: $sizeChartID) {
+    ...VehicleSizeChart
+  }
+}

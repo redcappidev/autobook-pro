@@ -1,0 +1,42 @@
+type NoteAssignee {
+  user: User
+  viewed: Boolean
+  viewedAt: DateTime
+}
+
+input NoteInput {
+  id: ID
+  note: String!
+}
+
+type Note {
+  id: ID!
+  note: String!
+  addedBy: User!
+  # assignees: [NoteAssignee]
+}
+
+input CreateQuoteNoteInput {
+  quoteId: ID!
+  note: String!
+  # assignees: [ID!]!
+}
+
+input UpdateQuoteNoteInput {
+  note: String!
+  # assignees: [ID!]!
+}
+
+type Mutation {
+  addQuoteNote(input: CreateQuoteNoteInput): Note
+    @hasOneOfPermissions(permissions: ["quote.update", "order.update"])
+  updateQuoteNote(id: ID!, input: UpdateQuoteNoteInput): Note
+    @hasOneOfPermissions(permissions: ["quote.update", "order.update"])
+  deleteQuoteNote(id: ID!): Void
+    @hasOneOfPermissions(permissions: ["quote.update", "order.update"])
+  viewQuoteNote(noteId: ID!): Void
+    @isAuthenticated
+  addCarrierNote(carrierId: ID!, note: String!): Note
+    @hasPermissions(permissions: ["carrier.update"])
+    @presentResource(name: "carrier", key: "carrierId")
+}

@@ -1,0 +1,21 @@
+type Fee {
+  id: ID!
+  slug: String
+  fee: NonNegativeFloat
+}
+
+input FeeInput {
+  id: ID
+  slug: String
+  fee: NonNegativeFloat
+}
+
+type Query {
+  fees: [Fee!]!
+    @hasPermissions(permissions: ["taq.view"])
+}
+
+type Mutation {
+  updateFees(feeData: [FeeInput!]!): [Fee!]!
+    @hasPermissions(permissions: ["taq.update"])
+}
